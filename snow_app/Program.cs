@@ -19,6 +19,7 @@ namespace snow_app
     {
         private static IEncodedConnection _connection;
         private const string CacheKey = "uncheckedMessages";
+        private const string TopicName = "topicName";
 
         public static void Main(string[] args)
         {
@@ -51,7 +52,7 @@ namespace snow_app
                 System.Console.WriteLine("Time: " + obj.TimeStamp);
             };
 
-            client.Subscribe("topicName", handler);
+            client.Subscribe(TopicName, handler);
 
         }
 

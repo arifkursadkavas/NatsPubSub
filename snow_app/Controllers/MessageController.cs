@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 
 using NATS.Client;
 using snow_app.Nats;
+using snow_app.Services;
 
 namespace snow_app.Controllers
 {
@@ -18,17 +19,7 @@ namespace snow_app.Controllers
     [Route("[controller]")]
     public class MessageController : ControllerBase
     {
-        private const string CacheKey = "uncheckedMessages";
-
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
         private readonly ILogger<MessageController> _logger;
-
-
-        
 
         public MessageController(ILogger<MessageController> logger)
         {
@@ -38,25 +29,15 @@ namespace snow_app.Controllers
         [HttpGet]
         public async Task<IEnumerable<Message>>  Get()
         {
-            ObjectCache cache = MemoryCache.Default;
-            CacheItemPolicy cacheItemPolicy = new CacheItemPolicy();
-            cacheItemPolicy.AbsoluteExpiration = DateTime.Now.AddHours(1.0);
-
-            List<Message> messages = (List<Message>)cache.Get(CacheKey);
-
-            cache.Remove(CacheKey);
-
-            return messages;
+            //_logger.LogDebug("Get request received to present messages");
+            return MessageService.GetAllMessagesFromCache();
         }
 
         [HttpPost]
         public async Task<Message>  Post(Message message)
         {
-            NatsClient<Message> client = new NatsClient<Message>();
-            
-            await Task.Run (() => client.Publish("topicName", message));
-
-            return message;
+            //_logger.LogDebug("Post request received", message);
+            return  await MessageService.PublishMessageToTopic(message);
         }
 
     }
