@@ -20,24 +20,26 @@ namespace snow_app.Controllers
     public class MessageController : ControllerBase
     {
         private readonly ILogger<MessageController> _logger;
+        private readonly IMessageService _messageService;
 
-        public MessageController(ILogger<MessageController> logger)
+        public MessageController(ILogger<MessageController> logger, IMessageService messageService)
         {
             _logger = logger;
+            _messageService = messageService;
         }
 
         [HttpGet]
         public async Task<IEnumerable<Message>>  Get()
         {
             //_logger.LogDebug("Get request received to present messages");
-            return MessageService.GetAllMessagesFromCache();
+            return _messageService.GetAllMessagesFromCache();
         }
 
         [HttpPost]
         public async Task<Message>  Post(Message message)
         {
             //_logger.LogDebug("Post request received", message);
-            return  await MessageService.PublishMessageToTopic(message);
+            return  await _messageService.PublishMessageToTopic(message);
         }
 
     }
